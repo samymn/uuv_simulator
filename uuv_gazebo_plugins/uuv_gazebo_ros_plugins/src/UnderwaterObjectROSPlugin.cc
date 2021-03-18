@@ -187,6 +187,8 @@ void UnderwaterObjectROSPlugin::Load(gazebo::physics::ModelPtr _parent,
   this->nedTransform.transform.rotation.y = quat.y();
   this->nedTransform.transform.rotation.z = quat.z();
   this->nedTransform.transform.rotation.w = quat.w();
+  
+  this->lastNEDStamp == ros::Time::now();
 }
 
 /////////////////////////////////////////////////
@@ -203,9 +205,19 @@ void UnderwaterObjectROSPlugin::Reset()
 void UnderwaterObjectROSPlugin::Update(const gazebo::common::UpdateInfo &_info)
 {
   UnderwaterObjectPlugin::Update(_info);
-
+  
   this->nedTransform.header.stamp = ros::Time::now();
-  this->tfBroadcaster.sendTransform(this->nedTransform);
+  
+  // Prevents transform broadcasting with the same stamp
+  if (this->nedTransform.header.stamp == this->lastNEDStamp)
+  {
+	return;
+  }
+  else
+  {
+    this->tfBroadcaster.sendTransform(this->nedTransform);
+    this->lastNEDStamp = this->nedTransform.header.stamp;
+  }
 }
 
 /////////////////////////////////////////////////

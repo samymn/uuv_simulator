@@ -225,6 +225,8 @@ namespace uuv_simulator_ros
     private: std::map<std::string, ros::ServiceServer> services;
 
     private: geometry_msgs::TransformStamped nedTransform;
+    
+    private: ros::Time lastNEDStamp;
 
     private: tf2_ros::TransformBroadcaster tfBroadcaster;
   };
